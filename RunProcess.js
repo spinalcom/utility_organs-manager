@@ -1,5 +1,8 @@
 
-var exec = require('child_process').exec, child;
+var spawn = require('child_process').spawn;
+function shspawn(command) {
+   return spawn('sh', ['-c', command], { stdio: 'inherit' });
+}
 
 function RunProcess(model, exe) {
     RunProcess.super(this, model);
@@ -12,12 +15,13 @@ function RunProcess(model, exe) {
     this.runOrgan = function(item) {
         var cmd = exe + ' ' + item._server_id;
         if ( cmd != null ){
-            child = exec(cmd,
-                function (error, stdout, stderr) {
-                    console.log(stdout);
-                    console.log(stderr);
-                    item._computation_state.set(false);
+            console.log('');
+            var child = shspawn(cmd);
+            child.on('close', 
+                function() { 
+                    item._computation_state.set(false); 
                 });
+            console.log('');
         }
     }
     
